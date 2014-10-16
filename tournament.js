@@ -133,10 +133,16 @@ function sortBy(array, prop, asc){
     });
 }
 
-function isSexMergeAgeLimitBetweenCategoryAges(sexMergeAgeLimit, ageCategories)
+function isSexMergeAgeBtwnCats(sexMergeAgeLimit, ageCategories)
 {
+	var isIt = false;
 	
-	return false;
+	$.each(ageCategories, function(index, value){
+		if(value.from < sexMergeAgeLimit && value.to > sexMergeAgeLimit){
+			isIt = true;
+		}
+	});
+	return isIt;
 }
 
 function createMatches(participants, categories, seedType, byeCriteria)
