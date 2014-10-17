@@ -114,8 +114,8 @@ var sexMergeAgeLimit = 6;
 var categories = [
 {"level":1, "name":"age", "subcategories" : [{"from":1, "to": 4},{"from":5, "to": 6},{"from":7, "to": 8},{"from":9, "to": 10},{"from":11, "to": 12},{"from":13, "to": 14},{"from":15, "to": 16},{"from":17, "to": 34},{"from":35, "to": 150}]},
 {"level":2, "name":"sex", "subcategories" : ["m","f"]},
-{"level":3, "name":"traintime", "subcategories" : []},
-{"level":4, "name":"weight","subcategories" : []}
+{"level":3, "name":"traintime", "subcategories" : [{"from":0, "to": 0.9}, {"from":1, "to": 1.9}, {"from":2, "to": 2.9}, {"from":3, "to": 100}]},
+{"level":4, "name":"weight","subcategories" : [{"from":60, "to": 79},{"from":80, "to": 99},{"from":100, "to": 119}]}
 ];
 
 //Default type is first and second
@@ -133,15 +133,15 @@ function sortBy(array, prop, asc){
     });
 }
 
-function isSexMergeAgeBtwnCats(sexMergeAgeLimit, ageCategories)
+function sortByLevels(array,categories, asc)
+{
+	
+}
+
+function mergeSexIsMid(sexMergeAgeLimit, ageCategories)
 {
 	var isIt = false;
-	
-	$.each(ageCategories, function(index, value){
-		if(value.from < sexMergeAgeLimit && value.to > sexMergeAgeLimit){
-			isIt = true;
-		}
-	});
+	isIt = Enumerable.From(ageCategories).Any("$.from < " + sexMergeAgeLimit + " && $.to > " + sexMergeAgeLimit);
 	return isIt;
 }
 
