@@ -111,6 +111,12 @@ var participants = [
 //TODO: An alert should be shown when setting this value as an intermediate age in a category
 var sexMergeAgeLimit = 6;
 
+var enforcedCategories = [
+{"name":"age","from":4, "to": 150},
+{"name":"weight", "from":50, "to": 200},
+{"name":"traintime","from":0.3, "to": 100}
+];
+
 var categories = [
 {"level":1, "name":"age", "subcategories" : [{"from":1, "to": 4},{"from":5, "to": 6},{"from":7, "to": 8},{"from":9, "to": 10},{"from":11, "to": 12},{"from":13, "to": 14},{"from":15, "to": 16},{"from":17, "to": 34},{"from":35, "to": 150}]},
 {"level":2, "name":"sex", "subcategories" : ["m","f"]},
@@ -118,6 +124,7 @@ var categories = [
 {"level":4, "name":"weight","subcategories" : [{"from":60, "to": 79},{"from":80, "to": 99},{"from":100, "to": 119}]}
 ];
 
+var graphics = new Array();
 //Default type is first and second
 var seedTypes = ["firstAndLast","firstAndMiddle","firstAndSecond","random"];
 
@@ -133,9 +140,38 @@ function sortBy(array, prop, asc){
     });
 }
 
-function sortByLevels(array,categories, asc)
+function createGraphics(cats)
 {
+	var graphs = new Array();
 	
+	for(x = 0; x < cats.length; x++)
+	{
+		cat = cats[x];
+		var newGraphs = new Array();
+		if(graphs.length != 0)
+		{
+			$.each(cat.subcategories, function(i, subcat){		
+				$.each(graphs, function(ii, gra){
+					var newG = new Array();
+					newG = $.extend( {}, gra);
+					newG[cat.name] = subcat;
+					newGraphs.push(newG);
+				});		
+			});	
+		}
+		else
+		{
+			$.each(cat.subcategories, function(i, subcat){
+				var graph = new Array();
+				graph[cat.name] = subcat;
+				newGraphs.push(graph);	
+			});	
+		}
+		
+		graphs = newGraphs;
+	}
+
+	return graphs;
 }
 
 function mergeSexIsMid(sexMergeAgeLimit, ageCategories)
@@ -151,7 +187,33 @@ function createMatches(participants, categories, seedType, byeCriteria)
 	return matches;
 }
 
+//TODO: TEST THIS FUNCTION
+function isGraphicValid(graph)
+{
+	var isValid = true;
 
+	for(x = 0; x < enforcedCategories.length; x++)
+	{	
+		var enforcedCat = enforcedCategories[x];
+		var graphCatValue = graph[enforcedCat.name];
+		if( graphCatValue == undefined) { isValid = false; break;}		
+
+		if(enforcedCat.from != undefined && enforcedCat.to != undefined)
+		{
+			if(!(enforcedCat.from <= graphCatValue && enforcedCat.to >= graphCatValue)) { isValid = false; break; }
+		}
+		else if(enforcedCat.value != undefined)
+		{
+			if(!(enforcedCat.value == graphCatValue)){ isValid = false; break; }
+		}
+	}
+
+	if(graph.traintime != undefined && graph.age != undefined)
+	{
+		if(graph.traintime > graph.age){ isValid = false;}
+	}
+	return isValid;
+}
 console.log(calculateByes(6));
 sortBy(participants, "age", true);
 console.log(participants);
