@@ -124,7 +124,6 @@ var categories = [
 {"level":4, "name":"weight","subcategories" : [{"from":60, "to": 79},{"from":80, "to": 99},{"from":100, "to": 119}]}
 ];
 
-var graphics = new Array();
 //Default type is first and second
 var seedTypes = ["firstAndLast","firstAndMiddle","firstAndSecond","random"];
 
@@ -140,6 +139,12 @@ function sortBy(array, prop, asc){
     });
 }
 
+function createGraphicsPFirst(categories, participants)
+
+
+//Creation using Categories First (graphs are created bases only in the categories and restrictions)
+//If using Graphics first need to fix issue when the bottom limit of a category is in the middle of the 
+//category restriction, or the top limit of the category is in the middle of the graph values.
 function createGraphics(cats)
 {
 	var graphs = new Array();
@@ -170,8 +175,17 @@ function createGraphics(cats)
 		
 		graphs = newGraphs;
 	}
+	
+	var finalGraphs = new Array();
 
-	return graphs;
+	for(y = 0; y < graphs.length; y++){
+		if(isGraphicValid(graphs[y])){
+			finalGraphs.push(graphs[y]);
+		}
+	}
+	
+
+	return finalGraphs;
 }
 
 function mergeSexIsMid(sexMergeAgeLimit, ageCategories)
@@ -187,7 +201,7 @@ function createMatches(participants, categories, seedType, byeCriteria)
 	return matches;
 }
 
-//TODO: TEST THIS FUNCTION
+
 function isGraphicValid(graph)
 {
 	var isValid = true;
@@ -200,7 +214,7 @@ function isGraphicValid(graph)
 
 		if(enforcedCat.from != undefined && enforcedCat.to != undefined)
 		{
-			if(!(enforcedCat.from <= graphCatValue && enforcedCat.to >= graphCatValue)) { isValid = false; break; }
+			if(!(enforcedCat.from <= graphCatValue.from && enforcedCat.to >= graphCatValue.to)) { isValid = false; break; }
 		}
 		else if(enforcedCat.value != undefined)
 		{
@@ -217,4 +231,3 @@ function isGraphicValid(graph)
 console.log(calculateByes(6));
 sortBy(participants, "age", true);
 console.log(participants);
-
