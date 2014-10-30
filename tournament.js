@@ -111,12 +111,6 @@ var participants = [
 //TODO: An alert should be shown when setting this value as an intermediate age in a category
 var sexMergeAgeLimit = 6;
 
-var enforcedCategories = [
-{"name":"age","from":4, "to": 150},
-{"name":"weight", "from":50, "to": 200},
-{"name":"traintime","from":0.3, "to": 100}
-];
-
 var categories = [
 {"level":1, "name":"age", "subcategories" : [{"from":1, "to": 4},{"from":5, "to": 6},{"from":7, "to": 8},{"from":9, "to": 10},{"from":11, "to": 12},{"from":13, "to": 14},{"from":15, "to": 16},{"from":17, "to": 34},{"from":35, "to": 150}]},
 {"level":2, "name":"sex", "subcategories" : ["m","f"]},
@@ -138,9 +132,6 @@ function sortBy(array, prop, asc){
         else return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
     });
 }
-
-function createGraphicsPFirst(categories, participants)
-
 
 //Creation using Categories First (graphs are created bases only in the categories and restrictions)
 //If using Graphics first need to fix issue when the bottom limit of a category is in the middle of the 
@@ -174,18 +165,15 @@ function createGraphics(cats)
 		}
 		
 		graphs = newGraphs;
-	}
-	
-	var finalGraphs = new Array();
+	}	
 
-	for(y = 0; y < graphs.length; y++){
-		if(isGraphicValid(graphs[y])){
-			finalGraphs.push(graphs[y]);
-		}
-	}
+	var finalgraphs = new Array();
 	
+	$.each(graphs, function(i, graph){
+		if(isGraphicValid(graph)) finalgraphs.push(graph);
+	});
 
-	return finalGraphs;
+	return finalgraphs;
 }
 
 function mergeSexIsMid(sexMergeAgeLimit, ageCategories)
@@ -206,25 +194,14 @@ function isGraphicValid(graph)
 {
 	var isValid = true;
 
-	for(x = 0; x < enforcedCategories.length; x++)
-	{	
-		var enforcedCat = enforcedCategories[x];
-		var graphCatValue = graph[enforcedCat.name];
-		if( graphCatValue == undefined) { isValid = false; break;}		
-
-		if(enforcedCat.from != undefined && enforcedCat.to != undefined)
-		{
-			if(!(enforcedCat.from <= graphCatValue.from && enforcedCat.to >= graphCatValue.to)) { isValid = false; break; }
-		}
-		else if(enforcedCat.value != undefined)
-		{
-			if(!(enforcedCat.value == graphCatValue)){ isValid = false; break; }
-		}
-	}
-
-	if(graph.traintime != undefined && graph.age != undefined)
+	if(graph.traintime != undefined
+	&& graph.age != undefined
+	&& graph.traintime.from != undefined 
+	&& graph.traintime.to != undefined 
+	&& graph.age.from != undefined
+	&& graph.age.to != undefined)
 	{
-		if(graph.traintime > graph.age){ isValid = false;}
+		if(graph.age.to < graph.traintime.from){ isValid = false;}
 	}
 	return isValid;
 }
